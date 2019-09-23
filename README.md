@@ -3,6 +3,6 @@ This is a repository to use hadamard coded data for light distribution estimatio
 
 Modifying the settings in args.py and run train and test code:
 
-```Python
+```Bash
 python main.py # For training
 python main.py main.py --mode test # For testing
