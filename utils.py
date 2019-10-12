@@ -72,4 +72,4 @@ def circshift_r(inimg, shift):
     return np.roll(inimg, shift, axis = 0)
 
 def tensorshift_r(inimg, shift):
-    return torch.roll(inimg, shift, 0)
+    return torch.roll(inimg, shift, 1)

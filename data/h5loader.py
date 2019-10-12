@@ -2,6 +2,7 @@ import os
 import torch.utils.data as data
 from . import utils
 import torch
+from PIL import Image
 
 class H5Loader(data.Dataset):
 
@@ -25,15 +26,18 @@ class H5Loader(data.Dataset):
         label_path = os.path.join(self.root_dir, names[1])
 
         img, label = self.loader(data_path, label_path)
+        #img=Image.fromarray(img)
 
         if self.mode.lower() == 'train':
             # img, label = self.transform(img, label)
-            img = self.transform(img)
-            label = torch.from_numpy(label).permute(2,0,1)
+            #img = self.transform(img)
+            img = torch.from_numpy(img)
+            label = torch.from_numpy(label)#.permute(2,0,1)
             #label = self.transform(label)
         else:
-            img = self.transform(img)
-            label = torch.from_numpy(label).permute(2,0,1)
+            #img = self.transform(img)
+            img = torch.from_numpy(img)
+            label = torch.from_numpy(label)#.permute(2,0,1)
             # label = self.transform(label)
 			
 

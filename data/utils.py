@@ -58,8 +58,6 @@ def h5_loader(data_path, label_path):
     h = h5py.File(label_path,'r')
     label = np.array(h['data'])#.transpose(1,0)
 
-
-    data=Image.fromarray(data)
     # label=Image.fromarray(label)
 
     return data, label

@@ -10,7 +10,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 
 import transforms.transforms as ext_transforms
-from models.enet import ENet
+from models.erfnet import ERFNet
 from train import Train
 from test import Test
 from args import get_arguments
@@ -73,8 +73,8 @@ def load_dataset(dataset):
 def train(train_loader, val_loader, circ_S):
     print("\nTraining...\n")
 
-    model = ENet(1).to(device)
-    # criterion = nn.MSELoss(reduction='none')
+    model = ERFNet(1).to(device).double()
+    #criterion = nn.MSELoss()
     criterion = ReconsLoss(circ_S)
 
     optimizer = optim.Adam(
@@ -101,20 +101,13 @@ def train(train_loader, val_loader, circ_S):
     train = Train(model, train_loader, optimizer, criterion, device)
     val = Test(model, val_loader, criterion, device)
     for epoch in range(start_epoch, args.epochs):
-        print(">>>> [Epoch: {0:d}] Training".format(epoch))
-
-        epoch_loss = train.run_epoch(lr_updater, args.print_step)
-
-        print(">>>> [Epoch: {0:d}] Avg. loss: {1:.4f}".
-              format(epoch, epoch_loss))
-
         if (epoch + 1) % 1 == 0 or epoch + 1 == args.epochs:
             print(">>>> [Epoch: {0:d}] Validation".format(epoch))
 
-            loss = val.run_epoch(args.print_step)
+            loss, epoch_snr = val.run_epoch(args.print_step)
 
-            print(">>>> [Epoch: {0:d}] Avg. loss: {1:.4f}".
-                  format(epoch, loss))
+            print(">>>> [Epoch: {0:d}] Avg. loss: {1:.4f} Avg. snr: {2:.4f}".
+                  format(epoch, loss, epoch_snr))
 
             # Save the model if it's the best thus far
             if loss < best_loss:
@@ -122,6 +115,13 @@ def train(train_loader, val_loader, circ_S):
                 best_loss = loss
                 utils.save_checkpoint(model, optimizer, epoch + 1, best_loss,
                                       args)
+        print(">>>> [Epoch: {0:d}] Training".format(epoch))
+
+        epoch_loss, epoch_snr = train.run_epoch(lr_updater, args.print_step)
+
+        print(">>>> [Epoch: {0:d}] Avg. loss: {1:.4f} Avg. snr: {2:.4f} Lr: {3:f}".
+              format(epoch, epoch_loss, epoch_snr, lr_updater.get_lr()[0]))
+
 
     return model
 
@@ -161,14 +161,14 @@ if __name__ == '__main__':
 
     if args.mode.lower() in {'test', 'full'}:
         if args.mode.lower() == 'test':
-            # Intialize a new ENet model
-            model = ENet(1).to(device)
+            # Intialize a new ERFNet model
+            model = ERFNet(1).to(device).double()
 
         # Initialize a optimizer just so we can retrieve the model from the
         # checkpoint
         optimizer = optim.Adam(model.parameters())
 
-        # Load the previoulsy saved model state to the ENet model
+        # Load the previoulsy saved model state to the ERFNet model
         model = utils.load_checkpoint(model, optimizer, args.save_dir,
                                       args.name)[0]
 

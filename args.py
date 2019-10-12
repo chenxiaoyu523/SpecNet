@@ -27,7 +27,7 @@ def get_arguments():
         "--batch-size",
         "-b",
         type=int,
-        default=16,
+        default=4,
         help="The batch size. Default: 10")
     parser.add_argument(
         "--epochs",
@@ -38,7 +38,7 @@ def get_arguments():
         "--learning-rate",
         "-lr",
         type=float,
-        default=1e-4,
+        default=1e-2,
         help="The learning rate. Default: 5e-4")
     parser.add_argument(
         "--lr-decay",
@@ -48,7 +48,7 @@ def get_arguments():
     parser.add_argument(
         "--lr-decay-epochs",
         type=int,
-        default=100,
+        default=10000,
         help="The number of epochs before adjusting the learning rate. "
         "Default: 100")
     parser.add_argument(
@@ -92,8 +92,8 @@ def get_arguments():
     parser.add_argument(
         "--name",
         type=str,
-        default='ENet',
-        help="Name given to the model when saving. Default: ENet")
+        default='erfnet',
+        help="Name given to the model when saving. Default: ERFNet")
     parser.add_argument(
         "--save-dir",
         type=str,
