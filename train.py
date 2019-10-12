@@ -50,7 +50,6 @@ class Train:
             self.optim.zero_grad()
             loss.backward()
             self.optim.step()
-            lr_updater.step()
 
             # Keep track of loss for current epoch
             epoch_loss += loss_b.item()
