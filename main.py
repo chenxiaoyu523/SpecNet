@@ -115,8 +115,9 @@ def train(train_loader, val_loader, circ_S):
                 best_loss = loss
                 utils.save_checkpoint(model, optimizer, epoch + 1, best_loss,
                                       args)
+                
+        lr_updater.step()
         print(">>>> [Epoch: {0:d}] Training".format(epoch))
-
         epoch_loss, epoch_snr = train.run_epoch(lr_updater, args.print_step)
 
         print(">>>> [Epoch: {0:d}] Avg. loss: {1:.4f} Avg. snr: {2:.4f} Lr: {3:f}".
