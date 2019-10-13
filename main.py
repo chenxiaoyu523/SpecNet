@@ -19,6 +19,7 @@ from data import H5Loader as dataset
 from loss import ReconsLoss
 from hadamard import hadamard_s
 import numpy as np
+import visdom
 
 # Get the arguments
 args = get_arguments()
@@ -88,41 +89,68 @@ def train(train_loader, val_loader, circ_S):
 
     # Optionally resume from a checkpoint
     if args.resume:
-        model, optimizer, start_epoch, best_loss = utils.load_checkpoint(
+        model, optimizer, start_epoch, best_loss, best_snr = utils.load_checkpoint(
             model, optimizer, args.save_dir, args.name)
         print("Resuming from model: Start epoch = {0} "
-              "| Best mean loss = {1:.4f}".format(start_epoch, best_loss))
+              "| Best mean loss = {1:.4f} Best mean snr = {1:.4f}".format(start_epoch, best_snr))
     else:
         start_epoch = 0
-        best_loss = np.inf
+        best_loss = 0
+
+    if args.visdom:
+        vis = visdom.Visdom()
+
+        loss_win = vis.line(X=np.column_stack((np.array(start_epoch),np.array(start_epoch))),
+                            Y=np.column_stack((np.array(best_loss),np.array(best_loss))),
+                            opts=dict(legend=['train', 'test'],
+                                      xlabel='epoch',
+                                      ylabel='loss',
+                                      title='Loss'))
+        snr_win = vis.line(X=np.column_stack((np.array(start_epoch),np.array(start_epoch))),
+                           Y=np.column_stack((np.array(0.),np.array(0.))),
+                           opts=dict(legend=['train', 'test'],
+                                     xlabel='epoch',
+                                     ylabel='snr',
+                                     title='SNR'))
 
     # Start Training
     print()
     train = Train(model, train_loader, optimizer, criterion, device)
     val = Test(model, val_loader, criterion, device)
     for epoch in range(start_epoch, args.epochs):
-        if (epoch + 1) % 1 == 0 or epoch + 1 == args.epochs:
-            print(">>>> [Epoch: {0:d}] Validation".format(epoch))
-
-            loss, epoch_snr = val.run_epoch(args.print_step)
-
-            print(">>>> [Epoch: {0:d}] Avg. loss: {1:.4f} Avg. snr: {2:.4f}".
-                  format(epoch, loss, epoch_snr))
-
-            # Save the model if it's the best thus far
-            if loss < best_loss:
-                print("\nBest model thus far. Saving...\n")
-                best_loss = loss
-                utils.save_checkpoint(model, optimizer, epoch + 1, best_loss,
-                                      args)
-                
-        lr_updater.step()
         print(">>>> [Epoch: {0:d}] Training".format(epoch))
-        epoch_loss, epoch_snr = train.run_epoch(lr_updater, args.print_step)
 
+        epoch_loss, epoch_snr = train.run_epoch(lr_updater, args.print_step)
+        lr_updater.step()
         print(">>>> [Epoch: {0:d}] Avg. loss: {1:.4f} Avg. snr: {2:.4f} Lr: {3:f}".
               format(epoch, epoch_loss, epoch_snr, lr_updater.get_lr()[0]))
 
+        if (epoch + 1) % 1 == 0 or epoch + 1 == args.epochs:
+            print(">>>> [Epoch: {0:d}] Validation".format(epoch))
+
+            loss, snr = val.run_epoch(args.print_step)
+
+            print(">>>> [Epoch: {0:d}] Avg. loss: {1:.4f} Avg. snr: {2:.4f}".
+                  format(epoch, loss, snr))
+
+            # Save the model if it's the best thus far
+            if snr < best_snr:
+                print("\nBest model thus far. Saving...\n")
+                best_snr = snr
+                utils.save_checkpoint(model, optimizer, epoch + 1, best_loss, best_snr,
+                                      args)
+        if args.visdom:
+            vis.line(
+                X=np.column_stack((np.array(epoch),np.array(epoch))),
+                Y=np.column_stack((np.array(epoch_loss),np.array(loss))),
+                win=loss_win,
+                update='append')
+
+            vis.line(
+                X=np.column_stack((np.array(epoch),np.array(epoch))),
+                Y=np.column_stack((np.array(epoch_snr),np.array(snr))),
+                win=snr_win,
+                update='append')
 
     return model
 
