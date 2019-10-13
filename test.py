@@ -19,7 +19,7 @@ class Test:
             inputs = batch_data[0].to(self.device).unsqueeze(1)
             labels = batch_data[1].to(self.device)
             gt_view = torch.sum(labels, 3)
-            
+
             with torch.no_grad():
                 # Forward propagation
                 # mask = (inputs>0).float()
@@ -36,7 +36,7 @@ class Test:
 
                 # Loss computation
                 loss, snr = self.criterion(inputs.squeeze(1), outputs.squeeze(1), labels)
-                loss_b = torch.nn.functional.mse_loss(outputs, gt_view)
+                loss_b = torch.nn.functional.mse_loss(outputs.squeeze(1), gt_view)
 
             # Keep track of loss for current epoch
             epoch_loss += loss_b.item()
