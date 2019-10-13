@@ -1,5 +1,9 @@
 import torch
 import matplotlib.pyplot as plt
+from args import get_arguments
+import sys
+args = get_arguments()
+
 class Train:
 
     def __init__(self, model, data_loader, optim, criterion, device):
@@ -48,7 +52,13 @@ class Train:
 
             # Backpropagation
             self.optim.zero_grad()
-            loss.backward()
+            if args.step1:
+              loss_b.backward()
+            elif args.step2:
+              loss.backward()
+            else:
+              print('please set which step for training')
+              sys.exit(0)
             self.optim.step()
 
             # Keep track of loss for current epoch
