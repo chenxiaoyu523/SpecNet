@@ -96,6 +96,7 @@ def train(train_loader, val_loader, circ_S):
     else:
         start_epoch = 0
         best_loss = 0
+        best_snr = 0
 
     if args.visdom:
         vis = visdom.Visdom()
