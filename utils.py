@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import os
 
 
-def save_checkpoint(model, optimizer, epoch, loss, args):
+def save_checkpoint(model, optimizer, epoch, loss, snr, args):
 
     name = args.name
     save_dir = args.save_dir
@@ -18,6 +18,7 @@ def save_checkpoint(model, optimizer, epoch, loss, args):
     checkpoint = {
         'epoch': epoch,
         'loss': loss,
+        'snr': snr,
         'state_dict': model.state_dict(),
         'optimizer': optimizer.state_dict()
     }
@@ -53,8 +54,9 @@ def load_checkpoint(model, optimizer, folder_dir, filename):
     optimizer.load_state_dict(checkpoint['optimizer'])
     epoch = checkpoint['epoch']
     loss = checkpoint['loss']
+    snr = checkpoint['snr']
 
-    return model, optimizer, epoch, loss
+    return model, optimizer, epoch, loss, snr
 
 def isprime(num):
     if num == 1:
