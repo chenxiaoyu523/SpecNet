@@ -21,6 +21,21 @@ def get_arguments():
         action='store_true',
         help=("The model found in \"--checkpoint_dir/--name/\" and filename "
               "\"--name.h5\" is loaded."))
+    parser.add_argument(
+        "-s1",
+        "--step1",
+        action='store_true',
+        help=("step1 optimization: use mixed intensity as label."))
+    parser.add_argument(
+        "-s2",
+        "--step2",
+        action='store_true',
+        help=("step2 optimization: use reconstructed spectrum as label."))
+    parser.add_argument(
+        "--visdom",
+        default=True,
+        action='store_true',
+        help=("visualize the results."))
 
     # Hyperparameters
     parser.add_argument(
@@ -38,8 +53,8 @@ def get_arguments():
         "--learning-rate",
         "-lr",
         type=float,
-        default=1e-2,
-        help="The learning rate. Default: 5e-4")
+        default=1e-3,
+        help="The learning rate. Default: 1e-2")
     parser.add_argument(
         "--lr-decay",
         type=float,
@@ -48,7 +63,7 @@ def get_arguments():
     parser.add_argument(
         "--lr-decay-epochs",
         type=int,
-        default=10000,
+        default=150,
         help="The number of epochs before adjusting the learning rate. "
         "Default: 100")
     parser.add_argument(
