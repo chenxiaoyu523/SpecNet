@@ -6,3 +6,7 @@ Modifying the settings in args.py and run train and test code:
 ```Bash
 python main.py # for training
 python main.py main.py --mode test # for testing
+```
+
+<img src="Loss.png" width="30%"> <img src="SNR.png" width="30%">
+
