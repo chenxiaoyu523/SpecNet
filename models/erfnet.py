@@ -191,7 +191,7 @@ class ERFNet(nn.Module):
         x=self.relu(self.conv3(x))
         #y=x.squeeze(0).detach().cpu().numpy()
         x=self.conv4(x)
-        x=torch.nn.functional.interpolate(x,[128,128],mode='bilinear')
+        x=torch.nn.functional.interpolate(x,[128,128],mode='bilinear', align_corners=True)
       #  plt.figure()
       #  plt.imshow(x[0][0].cpu().detach().numpy(),cmap='gray')
       #  plt.show()

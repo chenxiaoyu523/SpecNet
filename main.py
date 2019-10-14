@@ -135,7 +135,7 @@ def train(train_loader, val_loader, circ_S):
                   format(epoch, loss, snr))
 
             # Save the model if it's the best thus far
-            if snr < best_snr:
+            if snr > best_snr:
                 print("\nBest model thus far. Saving...\n")
                 best_snr = snr
                 utils.save_checkpoint(model, optimizer, epoch + 1, best_loss, best_snr,
