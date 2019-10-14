@@ -12,5 +12,5 @@ sh demo.sh # for training
 python main.py main.py --mode test # for testing
 ```
 
-<img src="Loss.png" width="50%"> <img src="SNR.png" width="50%">
+<img src="Loss.png" width="100%"> <img src="SNR.png" width="100%">
 
